@@ -1,0 +1,89 @@
+measure,comparison,group,value
+none,none,all,100
+issues,none,all,100
+environment,none,all,100
+adani,none,all,100
+boats,none,all,100
+multicultural,none,all,100
+drugtesting,none,all,100
+turnbull,none,all,100
+parliament,none,all,100
+euthanasia,none,all,100
+republic,none,all,100
+vote,none,all,100
+issues,nineteen,environment,29
+issues,nineteen,economy,23
+issues,nineteen,others,48
+issues,sixteen,economy,25
+issues,sixteen,environment,9
+issues,sixteen,others,66
+issues,qld,economy,27
+issues,qld,environment,24
+issues,qld,others,49
+environment,overall,more,81
+environment,overall,less,7
+environment,overall,about the same,11
+environment,overall,don't know,1
+adani,overall,Agree,20
+adani,overall,Neutral,13
+adani,overall,Disagree,61
+adani,overall,Don't know,6
+adani,Melbourne,Agree,13
+adani,Melbourne,Neutral,13
+adani,Melbourne,Disagree,68
+adani,Melbourne,Don't know,6
+adani,qldregional,Agree,45
+adani,qldregional,Neutral,12
+adani,qldregional,Disagree,41
+adani,qldregional,Don't know,2
+boats,overall,agree,46
+boats,overall,disagree,42
+boats,overall,neutral,12
+multicultural,onenation,Agree,17
+multicultural,onenation,Disagree,71
+multicultural,onenation,Neutral,11
+multicultural,onenation,Don't know,1
+drugtesting,overall,Agree,52
+drugtesting,overall,Disagree,35
+drugtesting,overall,Neutral,13
+turnbull,overall,Yes,22
+turnbull,overall,No,78
+turnbull,greens,Yes,3
+turnbull,greens,No,97
+turnbull,labor,Yes,4
+turnbull,labor,No,96
+turnbull,coalition,Yes,42
+turnbull,coalition,No,58
+turnbull,onenation,Yes,59
+turnbull,onenation,No,41
+parliament,women,Agree,63
+parliament,women,Disagree,19
+parliament,women,Neutral,17
+parliament,women,Don't know,1
+parliament,men,Agree,39
+parliament,men,Disagree,40
+parliament,men,Neutral,21
+euthanasia,overall,Agree,87
+euthanasia,overall,Disagree,7
+euthanasia,overall,Neutral,6
+republic,overall,Agree,41
+republic,overall,Disagree,32
+republic,overall,Neutral,25
+republic,overall,Don't know,2
+vote,overall,coalition,41
+vote,overall,labor,34
+vote,overall,greens,10
+vote,overall,united australia party,4
+vote,overall,one nation,3
+vote,overall,others,8
+vote,sixteen,coalition,42
+vote,sixteen,labor,35
+vote,sixteen,greens,10
+vote,sixteen,one nation,1
+vote,sixteen,others,12
+vote,queensland,coalition,44
+vote,queensland,labor,27
+vote,queensland,greens,10
+vote,queensland,united australia party,3
+vote,queensland,one nation,9
+vote,queensland,others,7

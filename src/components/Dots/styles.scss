@@ -1,0 +1,31 @@
+.dots {
+  position: relative;
+  z-index: 1;
+  background-color: #3c6998; // Fallback if no js
+  transition: background 0.2s;
+
+  svg {
+    background: none;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  .population {
+    fill: rgba(255, 255, 255, 0.8);
+    stroke-width: 0;
+    stroke: #000;
+  }
+
+  .group-label text {
+    font-size: 15px;
+    fill: #fff;
+    text-anchor: middle;
+    // text-shadow: 2px 2px #000;
+  }
+
+  .group-label path {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.6);
+    stroke-width: 1;
+  }
+}
