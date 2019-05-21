@@ -59,8 +59,6 @@ export default class Dots extends React.Component {
 
     this.data = new Promise((resolve, reject) => {
       csv(this.props.dataUrl, (err, json) => {
-        console.log("err", err);
-        console.log("json", json);
         if (err) return reject(err);
         resolve(json);
       });
@@ -68,7 +66,6 @@ export default class Dots extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log("nextProps", nextProps);
     // TODO: Add any conditions that mitigate updating the graph
     this.updateGraph(nextProps);
   }
@@ -132,7 +129,7 @@ export default class Dots extends React.Component {
 
     this.simulationNodes = simulationNodes;
     this.simulationGroups = simulationGroups;
-    this.updateGraph(this.props);
+    this.updateGraph(props);
   }
 
   /**
@@ -154,10 +151,10 @@ export default class Dots extends React.Component {
 
     this.rootSelection.style("background-color", color(this.currentColor));
 
-    // d3.selectAll(".Scrollyteller-content").style(
-    //   "background-color",
-    //   hexToRgbA(color(currentColor))
-    // );
+    document.documentElement.style.setProperty(
+      "--panel-bg-color",
+      hexToRgbA(color(this.currentColor))
+    );
 
     // Wait until data exists before we actually react to anything here
     this.data
