@@ -15,6 +15,7 @@ function init() {
     console.error(e);
   }
 
+  // Keep the DOM tidy.
   if (scrollyteller && scrollyteller.mountNode) {
     while (scrollyteller.mountNode.nextElementSibling.tagName === "A") {
       window.__ODYSSEY__.utils.dom.detach(
@@ -22,6 +23,7 @@ function init() {
       );
     }
   }
+
   render(
     <App
       projectName={PROJECT_NAME}
