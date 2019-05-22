@@ -98,10 +98,7 @@ export default class Dots extends React.Component {
 
     this.currentColor = "none";
 
-    this.rootSelection = select(this.rootRef.current).style(
-      "background-color",
-      color(this.currentColor)
-    );
+    this.rootSelection = select(this.rootRef.current);
     this.svgSelection = this.rootSelection.append("svg");
 
     this.groups;
