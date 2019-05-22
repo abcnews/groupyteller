@@ -5,7 +5,7 @@ import styles from "./styles.scss";
 
 export default function App({ scrollyData, dataUrl }) {
   const [mark, setMark] = useState();
-
+  console.log("scrollyData", scrollyData);
   return scrollyData ? (
     <Scrollyteller
       panels={scrollyData.panels}

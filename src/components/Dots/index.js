@@ -139,12 +139,17 @@ export default class Dots extends React.Component {
   updateGraph(props) {
     if (!this.rootRef.current) return;
 
-    if (!props.mark) return;
+    if (
+      !props.mark ||
+      (this.currentMeasure === props.mark.measure &&
+        this.currentComparison === props.mark.comparison)
+    )
+      return;
     // TODO: Use D3 to update the graph
 
     this.currentMeasure = props.mark.measure;
     this.currentComparison = props.mark.comparison;
-    console.log("this.currentMeasure", this.currentMeasure);
+
     // Set color according to measure
     this.currentColor =
       props.mark[colorPropertyMeta ? colorPropertyMeta.content : "measure"];
@@ -315,7 +320,7 @@ export default class Dots extends React.Component {
           .attr("cx", d => d.x || d.group.x)
           .attr("cy", d => d.y || d.group.y)
           .merge(this.circles);
-        console.log("pos", this.circles);
+
         // Position them
         this.simulationNodes
           .nodes(this.nodes)
