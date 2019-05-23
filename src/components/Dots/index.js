@@ -115,8 +115,6 @@ function graph(mountNode, data, options) {
   const rootSelection = select(mountNode);
   const svgSelection = rootSelection.append("svg");
 
-  let groupLabels = svgSelection.selectAll(`g.${styles.groupLabel}`);
-
   let clusterSimulation;
   let dotSimulation;
 
@@ -150,9 +148,16 @@ function graph(mountNode, data, options) {
       .filter(d => d.measure === measure && d.comparison === comparison)
       // Add some properties to the groups
       .map(d => {
-        const cluster = clusters.find(
+        const existingCluster = clusters.find(
           c => c.measure === d.measure && c.group === d.group
-        ) || { ...d };
+        );
+
+        const cluster = existingCluster || {
+          ...d,
+          x: width / 2,
+          y: height / 2
+        };
+
         return {
           ...cluster,
           r: Math.sqrt((+d.value * (markRadius + markMargin) * 35) / Math.PI),
@@ -161,28 +166,26 @@ function graph(mountNode, data, options) {
         };
       });
 
-    const totalValue = clusters.reduce(
-      (total, group) => (total += +group.value),
-      0
-    );
-
-    // Failsafe for bad data
-    if (totalValue !== 100) {
-      console.error(
-        `Group error: total value is ${totalValue}, it should be 100`,
-        clusters
-      );
-      return;
-    }
-
+    // const totalValue = clusters.reduce(
+    //   (total, group) => (total += +group.value),
+    //   0
+    // );
+    //
+    // // Failsafe for bad data
+    // if (totalValue !== 100) {
+    //   console.error(
+    //     `Group error: total value is ${totalValue}, it should be 100`,
+    //     clusters
+    //   );
+    //   return;
+    // }
     const requiredDots = clusters.reduce(
       (dots, cluster) =>
         dots.concat(
           ranger(+cluster.value, i => {
             return {
               // Random spread of dots on reload
-              x: getRandomInCircle(0, width, 0, height).x,
-              y: getRandomInCircle(0, width, 0, height).y,
+              ...getRandomInCircle(0, width, 0, height),
               cluster: cluster
             };
           })
@@ -192,7 +195,7 @@ function graph(mountNode, data, options) {
 
     const dotsPrime = dots.slice();
 
-    const newDots = requiredDots
+    dots = requiredDots
       .map(template => {
         const foundId = dotsPrime.findIndex(d => {
           return d.cluster.group === template.cluster.group;
@@ -200,7 +203,7 @@ function graph(mountNode, data, options) {
 
         if (foundId > -1) {
           const found = dotsPrime.splice(foundId, 1);
-          return found[0];
+          return { ...found[0], cluster: template.cluster };
         }
         return { replaceWith: { ...template } };
       })
@@ -213,7 +216,23 @@ function graph(mountNode, data, options) {
           : dot.replaceWith;
       });
 
-    dots = newDots;
+    // Basic fix for labels going off top of screen on small mobiles
+    // clusters.forEach(d => (d.y += 40)); // Account for label height
+
+    // Labels - using tspans to for multi-line labels
+    const groupLabels = svgSelection
+      .selectAll(`g.${styles.groupLabel}`)
+      .data(clusters)
+      .join(enter =>
+        enter
+          .append("g")
+          .attr("class", styles.groupLabel)
+          .call(g => {
+            g.append("text");
+            g.append("path");
+          })
+      )
+      .call(label => label.select("text").call(tspans, d => d.groupLines));
 
     // Resolve cluster positions
     clusterSimulation.nodes(clusters).alpha(1);
@@ -222,35 +241,10 @@ function graph(mountNode, data, options) {
       clusterSimulation.tick();
       // Keep it in the bounds.
       clusters.forEach(d => {
-        d.x = Math.min(
-          props.width - margin * 2 - d.r,
-          Math.max(margin + d.r, d.x)
-        );
-        d.y = Math.min(
-          props.height - margin * 2 - d.r,
-          Math.max(margin + d.r, d.y)
-        );
+        d.x = Math.min(width - margin * 2 - d.r, Math.max(margin + d.r, d.x));
+        d.y = Math.min(height - margin * 2 - d.r, Math.max(margin + d.r, d.y));
       });
     }
-
-    // Basic fix for labels going off top of screen on small mobiles
-    clusters.forEach(d => (d.y += 40)); // Account for label height
-
-    // Labels - using tspans to for multi-line labels
-    groupLabels = groupLabels.data(clusters, c => c.measure + c.group);
-    groupLabels.exit().remove();
-
-    let groupLabelsEnter = groupLabels
-      .enter()
-      .append("g")
-      .attr("class", styles.groupLabel);
-    groupLabelsEnter.append("text");
-    groupLabelsEnter.append("path");
-
-    groupLabels = groupLabelsEnter.merge(groupLabels);
-    groupLabels.selectAll("tspan").remove();
-
-    tspans.call(groupLabels.select("text"), d => d.groupLines);
 
     // Setup objects for the label positioner to use
     clusters.forEach(d => {
@@ -273,15 +267,13 @@ function graph(mountNode, data, options) {
       d.label.name = d.group;
     });
 
-    const nsweeps = clusters.length * 2;
-
     // Calculate label positions
     labeler()
       .label(clusters.map(d => d.label))
       .anchor(clusters.map(d => d.anchor))
-      .width(props.width - margin * 2)
-      .height(props.height - margin * 2)
-      .start(nsweeps);
+      .width(width - margin * 2)
+      .height(height - margin * 2)
+      .start(clusters.length * 2);
 
     // Position the text
     groupLabels
@@ -308,22 +300,22 @@ function graph(mountNode, data, options) {
     });
 
     // Add all the 'people'
-    const updatingCircles = svgSelection
+    const circles = svgSelection
       .selectAll(`circle.${styles.population}`)
-      .data(dots);
-
-    updatingCircles
-      .enter()
-      .append("circle")
+      .data(dots)
+      .join("circle")
       .attr("class", styles.population)
       .attr("r", markRadius)
       .attr("cx", d => d.x || d.cluster.x)
       .attr("cy", d => d.y || d.cluster.y);
 
-    updatingCircles.exit().remove();
-
     // Position them
     dotSimulation
+      .on("tick", () => {
+        circles
+          .attr("cx", d => Math.max(margin, Math.min(width - margin, d.x)))
+          .attr("cy", d => Math.max(margin, Math.min(height - margin, d.y)));
+      })
       .nodes(dots)
       .alpha(1.3)
       .restart();
@@ -335,40 +327,42 @@ function graph(mountNode, data, options) {
         "x",
         forceX(d =>
           d.cluster && d.cluster.x ? d.cluster.x : width / 2
-        ).strength(0.05)
+        ).strength(0.06)
       )
       .force(
         "y",
         forceY(d =>
           d.cluster && d.cluster.y ? d.cluster.y : height / 2
-        ).strength(0.05)
+        ).strength(0.06)
       )
-      .force("collide", forceCollide(markMargin).strength(1))
-      .on("tick", () => {
-        svgSelection
-          .selectAll(`circle.${styles.population}`)
-          .attr("cx", d => Math.max(margin, Math.min(width - margin, d.x)))
-          .attr("cy", d => Math.max(margin, Math.min(height - margin, d.y)));
-      });
+      .force(
+        "collide",
+        forceCollide(markMargin)
+          .strength(1)
+          .iterations(3)
+      );
   }
 
   function getClusterSimulation() {
-    return forceSimulation()
-      .force("gravity", forceCenter(width / 2, height / 2))
-      .force(
-        "attract",
-        forceManyBody()
-          .strength(1010)
-          .distanceMin(10)
-      )
-      .force(
-        "repel",
-        forceManyBody()
-          .strength(-1000)
-          .distanceMax(Math.min(width, height) - margin * 2 + 90)
-      )
-      .force("collide", forceCollide(75))
-      .stop();
+    return (
+      forceSimulation()
+        .force("gravity", forceCenter(width / 2, height / 2))
+        .force(
+          "attract",
+          forceManyBody()
+            .strength(100)
+            .distanceMin(10)
+            .distanceMax(Math.max(width, height) * 2)
+        )
+        // .force(
+        //   "repel",
+        //   forceManyBody()
+        //     .strength(-1000)
+        //     .distanceMax(Math.min(width, height) - margin * 2 + 90)
+        // )
+        .force("collide", forceCollide(c => c.r + 40).iterations(3))
+        .stop()
+    );
   }
 
   return { update };

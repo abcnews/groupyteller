@@ -110,24 +110,21 @@ export function hexToRgbA(hex, a = "0.85") {
   throw new Error("Bad Hex");
 }
 
-export function tspans(lines, lh) {
-  return this.selectAll("tspan")
-    .data(function(d) {
-      return (typeof lines == "function" ? lines(d) : lines).map(function(l) {
-        return { line: l, parent: d };
-      });
-    })
-    .enter()
-    .append("tspan")
-    .text(function(d) {
-      return d.line;
-    })
+export function tspans(selection, lines, lh) {
+  return selection
+    .selectAll("tspan")
+    .data(parent =>
+      (typeof lines == "function" ? lines(parent) : lines).map(line => ({
+        line,
+        parent
+      }))
+    )
+    .join("tspan")
+    .text(d => d.line)
     .attr("x", 0)
-    .attr("dy", function(d, i) {
-      return i
-        ? (typeof lh == "function" ? lh(d.parent, d.line, i) : lh) || 15
-        : 0;
-    });
+    .attr("dy", (d, i) =>
+      i ? (typeof lh == "function" ? lh(d.parent, d.line, i) : lh) || 15 : 0
+    );
 }
 
 export function wordwrap(
