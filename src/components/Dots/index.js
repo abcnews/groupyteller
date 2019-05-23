@@ -96,7 +96,7 @@ function graph(mountNode, data, options) {
         "#306C3F"
       ],
       colorProperty: "measure",
-      margin: 10,
+      margin: 20,
       markRadius: 5,
       markMargin: 7
     },
@@ -177,19 +177,20 @@ function graph(mountNode, data, options) {
         };
       });
 
-    // const totalValue = clusters.reduce(
-    //   (total, group) => (total += +group.value),
-    //   0
-    // );
-    //
-    // // Failsafe for bad data
-    // if (totalValue !== 100) {
-    //   console.error(
-    //     `Group error: total value is ${totalValue}, it should be 100`,
-    //     clusters
-    //   );
-    //   return;
-    // }
+    const totalValue = clusters.reduce(
+      (total, group) => (total += +group.value),
+      0
+    );
+
+    // Failsafe for bad data
+    if (totalValue !== 100) {
+      console.warn(
+        `Group error: total value is ${totalValue}, it should be 100`,
+        clusters
+      );
+      return;
+    }
+
     const requiredDots = clusters.reduce(
       (dots, cluster) =>
         dots.concat(
@@ -228,7 +229,7 @@ function graph(mountNode, data, options) {
       });
 
     // Basic fix for labels going off top of screen on small mobiles
-    // clusters.forEach(d => (d.y += 40)); // Account for label height
+    clusters.forEach(d => (d.y += 40)); // Account for label height
 
     // Labels - using tspans to for multi-line labels
     const groupLabels = svgSelection
@@ -250,10 +251,14 @@ function graph(mountNode, data, options) {
 
     while (clusterSimulation.alpha() > clusterSimulation.alphaMin()) {
       clusterSimulation.tick();
+
       // Keep it in the bounds.
       clusters.forEach(d => {
         d.x = Math.min(width - margin * 2 - d.r, Math.max(margin + d.r, d.x));
-        d.y = Math.min(height - margin * 2 - d.r, Math.max(margin + d.r, d.y));
+        d.y = Math.min(
+          height - margin * 2 - d.r,
+          Math.max(margin + d.r + 40, d.y)
+        );
       });
     }
 
