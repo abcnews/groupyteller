@@ -62,6 +62,7 @@ export default class Dots extends React.Component {
         if (colorMeta) options.colors = colorMeta.content.split(",");
         if (colorPropertyMeta)
           options.colorProperty = colorPropertyMeta.content;
+        options.marks = this.props.marks;
 
         const viz = graph(this.rootRef.current, data, options);
         viz.update(this.props);
@@ -106,7 +107,14 @@ function graph(mountNode, data, options) {
   let clusters = [];
 
   const { colors, colorProperty, margin, markRadius, markMargin } = options;
-  const colorScale = scaleOrdinal(colors);
+  const domain = options.marks.reduce((acc, row) => {
+    if (acc.indexOf(row[colorProperty]) === -1) {
+      acc.push(row[colorProperty]);
+    }
+    return acc;
+  }, []);
+
+  const colorScale = scaleOrdinal(domain, colors);
 
   let width;
   let height;

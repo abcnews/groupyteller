@@ -26,6 +26,7 @@ export default function App({ scrollyData, dataUrl }) {
     >
       <Dots
         mark={mark}
+        marks={scrollyData.panels.map(d => d.config)}
         dataUrl={dataUrl}
         width={dimensions[0]}
         height={dimensions[1]}
