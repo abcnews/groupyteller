@@ -1,78 +1,86 @@
 // Fork of https://github.com/tinker10/D3-Labeler
 
 export function labeler() {
-  var lab = [],
-    anc = [],
-    w = 1, // box width
-    h = 1, // box width
-    labeler = {};
+  // The returned labeler object
+  const labeler = {};
 
-  var max_move = 5.0,
-    max_angle = 0.2,
-    acc = 0;
-  let rej = 0;
+  // User definable data
+  let lab = [];
+  let anc = [];
+  let w = 1; // box width
+  let h = 1; // box width
+  let user_defined_energy = null;
+  let user_defined_schedule = null;
+
+  const max_move = 5.0;
+  const max_angle = 0.2;
+
+  // Possibly useful for debugging
+  let acceptedMoves = 0;
+  let rejectedMoves = 0;
 
   // weights
-  var w_len = 0.2, // leader line length
-    w_inter = 1.0, // leader line intersection
-    w_lab2 = 30.0, // label-label overlap
-    w_lab_anc = 30.0; // label-anchor overlap
-  let w_orient = 3.0; // orientation bias
+  const w_len = 0.2; // leader line length
+  const w_inter = 1.0; // leader line intersection
+  const w_lab2 = 30.0; // label-label overlap
+  const w_lab_anc = 30.0; // label-anchor overlap
+  const w_orient = 3.0; // orientation bias
 
-  // booleans for user defined functions
-  var user_energy = false,
-    user_schedule = false;
-
-  var user_defined_energy, user_defined_schedule;
+  const getEnergy = (i, lab, anc) =>
+    user_defined_energy ? user_defined_energy(i, lab, anc) : energy(i);
 
   const energy = function(index) {
     // energy function, tailored for label placement
 
-    var m = lab.length,
-      ener = 0,
-      dx = lab[index].x - anc[index].x,
-      dy = anc[index].y - lab[index].y,
-      dist = Math.sqrt(dx * dx + dy * dy),
-      overlap = true,
-      amount = 0;
-    let theta = 0;
+    let result = 0;
+
+    const label = lab[index];
+    const anchor = anc[index];
+
+    let dx = label.x - anchor.x;
+    let dy = anchor.y - label.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    let overlap = true;
 
     // penalty for length of leader line
-    if (dist > 0) ener += dist * w_len;
+    if (dist > 0) result += dist * w_len;
 
     // label orientation bias
     dx /= dist;
     dy /= dist;
     if (dx > 0 && dy > 0) {
-      ener += 0 * w_orient;
+      result += 0 * w_orient;
     } else if (dx < 0 && dy > 0) {
-      ener += 1 * w_orient;
+      result += 1 * w_orient;
     } else if (dx < 0 && dy < 0) {
-      ener += 2 * w_orient;
+      result += 2 * w_orient;
     } else {
-      ener += 3 * w_orient;
+      result += 3 * w_orient;
     }
 
-    var x21 = lab[index].x,
-      y21 = lab[index].y - lab[index].height + 2.0,
-      x22 = lab[index].x + lab[index].width,
-      y22 = lab[index].y + 2.0;
-    var x11, x12, y11, y12, x_overlap, y_overlap, overlap_area;
+    const x21 = label.x;
+    const y21 = label.y - label.height + 2.0;
+    const x22 = label.x + label.width;
+    const y22 = label.y + 2.0;
 
-    for (var i = 0; i < m; i++) {
+    let x11, x12, y11, y12, x_overlap, y_overlap, overlap_area;
+
+    const m = lab.length;
+
+    for (let i = 0; i < m; i++) {
       if (i != index) {
         // penalty for intersection of leader lines
         overlap = intersect(
-          anc[index].x,
-          lab[index].x,
+          anchor.x,
+          label.x,
           anc[i].x,
           lab[i].x,
-          anc[index].y,
-          lab[index].y,
+          anchor.y,
+          label.y,
           anc[i].y,
           lab[i].y
         );
-        if (overlap) ener += w_inter;
+        if (overlap) result += w_inter;
 
         // penalty for label-label overlap
         x11 = lab[i].x;
@@ -83,7 +91,7 @@ export function labeler() {
         y_overlap = Math.max(0, Math.min(y12, y22) - Math.max(y11, y21));
         overlap_area = x_overlap * y_overlap;
         //   console.log('label-overlap', overlap_area);
-        ener += overlap_area * w_lab2;
+        result += overlap_area * w_lab2;
       }
 
       // penalty for label-anchor overlap
@@ -95,58 +103,49 @@ export function labeler() {
       y_overlap = Math.max(0, Math.min(y12, y22) - Math.max(y11, y21));
       overlap_area = x_overlap * y_overlap;
       //   console.log('anchor-overlap', overlap_area);
-      ener += overlap_area * w_lab_anc;
+      result += overlap_area * w_lab_anc;
     }
 
-    return ener;
+    return result;
   };
 
   const mcmove = function(currT) {
     // Monte Carlo translation move
 
     // select a random label
-    var i = Math.floor(Math.random() * lab.length);
+    const i = Math.floor(Math.random() * lab.length);
+    const label = lab[i];
 
     // save old coordinates
-    var x_old = lab[i].x;
-    var y_old = lab[i].y;
+    const x_old = label.x;
+    const y_old = label.y;
 
     // old energy
-    var old_energy;
-    if (user_energy) {
-      old_energy = user_defined_energy(i, lab, anc);
-    } else {
-      old_energy = energy(i);
-    }
+    const old_energy = getEnergy(i, lab, anc);
 
     // random translation
-    lab[i].x += (Math.random() - 0.5) * max_move;
-    lab[i].y += (Math.random() - 0.5) * max_move;
+    label.x += (Math.random() - 0.5) * max_move;
+    label.y += (Math.random() - 0.5) * max_move;
 
     // hard wall boundaries
-    if (lab[i].x > w - lab[i].width / 2) lab[i].x = x_old;
-    if (lab[i].x < 0 + lab[i].width / 2) lab[i].x = x_old;
-    if (lab[i].y > h - lab[i].height / 2) lab[i].y = y_old;
-    if (lab[i].y < 0 + lab[i].height / 2) lab[i].y = y_old;
+    if (label.x > w - label.width / 2) label.x = x_old;
+    if (label.x < 0 + label.width / 2) label.x = x_old;
+    if (label.y > h - label.height / 2) label.y = y_old;
+    if (label.y < 0 + label.height / 2) label.y = y_old;
 
     // new energy
-    var new_energy;
-    if (user_energy) {
-      new_energy = user_defined_energy(i, lab, anc);
-    } else {
-      new_energy = energy(i);
-    }
+    const new_energy = getEnergy(i, lab, anc);
 
     // delta E
     var delta_energy = new_energy - old_energy;
     // console.log('delta_energy', delta_energy);
     if (Math.random() < Math.exp(-delta_energy / currT)) {
-      acc += 1;
+      acceptedMoves += 1;
     } else {
       // move back to old coordinates
-      lab[i].x = x_old;
-      lab[i].y = y_old;
-      rej += 1;
+      label.x = x_old;
+      label.y = y_old;
+      rejectedMoves += 1;
     }
   };
 
@@ -154,62 +153,53 @@ export function labeler() {
     // Monte Carlo rotation move
 
     // select a random label
-    var i = Math.floor(Math.random() * lab.length);
+    const i = Math.floor(Math.random() * lab.length);
+    const label = lab[i];
+    const anchor = anc[i];
 
     // save old coordinates
-    var x_old = lab[i].x;
-    var y_old = lab[i].y;
+    const x_old = label.x;
+    const y_old = label.y;
 
     // old energy
-    var old_energy;
-    if (user_energy) {
-      old_energy = user_defined_energy(i, lab, anc);
-    } else {
-      old_energy = energy(i);
-    }
+    const old_energy = getEnergy(i, lab, anc);
 
     // random angle
-    var angle = (Math.random() - 0.5) * max_angle;
-
-    var s = Math.sin(angle);
-    var c = Math.cos(angle);
+    const angle = (Math.random() - 0.5) * max_angle;
+    const s = Math.sin(angle);
+    const c = Math.cos(angle);
 
     // translate label (relative to anchor at origin):
-    lab[i].x -= anc[i].x;
-    lab[i].y -= anc[i].y;
+    label.x -= anchor.x;
+    label.y -= anchor.y;
 
     // rotate label
-    var x_new = lab[i].x * c - lab[i].y * s,
-      y_new = lab[i].x * s + lab[i].y * c;
+    const x_new = label.x * c - label.y * s;
+    const y_new = label.x * s + label.y * c;
 
     // translate label back
-    lab[i].x = x_new + anc[i].x;
-    lab[i].y = y_new + anc[i].y;
+    label.x = x_new + anchor.x;
+    label.y = y_new + anchor.y;
 
     // hard wall boundaries
-    if (lab[i].x > w) lab[i].x = x_old;
-    if (lab[i].x < 0) lab[i].x = x_old;
-    if (lab[i].y > h) lab[i].y = y_old;
-    if (lab[i].y < 0) lab[i].y = y_old;
+    if (label.x > w) label.x = x_old;
+    if (label.x < 0) label.x = x_old;
+    if (label.y > h) label.y = y_old;
+    if (label.y < 0) label.y = y_old;
 
     // new energy
-    var new_energy;
-    if (user_energy) {
-      new_energy = user_defined_energy(i, lab, anc);
-    } else {
-      new_energy = energy(i);
-    }
+    const new_energy = getEnergy(i, lab, anc);
 
     // delta E
     var delta_energy = new_energy - old_energy;
 
     if (Math.random() < Math.exp(-delta_energy / currT)) {
-      acc += 1;
+      acceptedMoves += 1;
     } else {
       // move back to old coordinates
-      lab[i].x = x_old;
-      lab[i].y = y_old;
-      rej += 1;
+      label.x = x_old;
+      label.y = y_old;
+      rejectedMoves += 1;
     }
   };
 
@@ -217,20 +207,14 @@ export function labeler() {
     // returns true if two lines intersect, else false
     // from http://paulbourke.net/geometry/lineline2d/
 
-    var mua, mub;
-    var denom, numera, numerb;
-
-    denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
-    numera = (x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3);
-    numerb = (x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3);
+    const denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+    const numera = (x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3);
+    const numerb = (x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3);
 
     /* Is the intersection along the the segments */
-    mua = numera / denom;
-    mub = numerb / denom;
-    if (!(mua < 0 || mua > 1 || mub < 0 || mub > 1)) {
-      return true;
-    }
-    return false;
+    const mua = numera / denom;
+    const mub = numerb / denom;
+    return !(mua < 0 || mua > 1 || mub < 0 || mub > 1);
   };
 
   const cooling_schedule = function(currT, initialT, nsweeps) {
@@ -240,19 +224,21 @@ export function labeler() {
 
   labeler.start = function(nsweeps) {
     // main simulated annealing function
-    var m = lab.length,
-      currT = 1.0,
-      initialT = 1.0;
+    const m = lab.length;
+    const initialT = 1.0;
+    let currT = 1.0;
 
-    for (var i = 0; i < nsweeps; i++) {
-      for (var j = 0; j < m; j++) {
+    for (let i = 0; i < nsweeps; i++) {
+      for (let j = 0; j < m; j++) {
         if (Math.random() < 0.5) {
           mcmove(currT);
         } else {
           mcrotate(currT);
         }
       }
-      currT = cooling_schedule(currT, initialT, nsweeps);
+      currT = user_defined_schedule
+        ? user_defined_schedule(currT, initialT, nsweeps)
+        : cooling_schedule(currT, initialT, nsweeps);
     }
   };
 
@@ -284,19 +270,19 @@ export function labeler() {
     return labeler;
   };
 
+  // user defined energy
   labeler.alt_energy = function(x) {
-    // user defined energy
-    if (!arguments.length) return energy;
+    if (!arguments.length)
+      return user_defined_energy ? user_defined_energy : energy;
     user_defined_energy = x;
-    user_energy = true;
     return labeler;
   };
 
+  // user defined cooling_schedule
   labeler.alt_schedule = function(x) {
-    // user defined cooling_schedule
-    if (!arguments.length) return cooling_schedule;
+    if (!arguments.length)
+      return user_defined_schedule ? user_defined_energy : cooling_schedule;
     user_defined_schedule = x;
-    user_schedule = true;
     return labeler;
   };
 
