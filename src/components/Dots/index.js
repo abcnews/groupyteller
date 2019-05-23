@@ -110,6 +110,8 @@ function graph(mountNode, data, options) {
 
   let width;
   let height;
+  let measure;
+  let comparison;
 
   // Selections
   const rootSelection = select(mountNode);
@@ -119,12 +121,13 @@ function graph(mountNode, data, options) {
   let dotSimulation;
 
   const update = props => {
-    if (!props.mark) return;
+    const { mark } = props;
 
-    const {
-      mark,
-      mark: { measure, comparison }
-    } = props;
+    if (!mark || (measure === mark.measure && comparison === mark.comparison))
+      return;
+
+    measure = mark.measure;
+    comparison = mark.comparison;
 
     if (width !== props.width || height !== props.height) {
       width = props.width;
