@@ -2,9 +2,11 @@
 
 A more generalised and modernised version of [Census as 100 people](https://github.com/abcnews/census-100-people/).
 
-This uses the [scrollyteller](https://github.com/abcnews/scrollyteller) react component.
+This uses the [scrollyteller](https://github.com/abcnews/scrollyteller) react component. 
 
 ## Usage
+
+Most of these instructions are fairly specific to the ABC News environment.
 
 Start by specifying a data file in the `init-interactive` embed.
 
