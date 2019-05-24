@@ -19,7 +19,7 @@
 		"react-test-renderer": "^16.8.6"
 	},
 	"dependencies": {
-		"@abcnews/scrollyteller": "^1.4.3",
+		"@abcnews/scrollyteller": "^1.4.4",
 		"d3-array": "^2.1.0",
 		"d3-force": "^2.0.1",
 		"d3-path": "^1.0.7",
