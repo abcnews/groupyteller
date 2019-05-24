@@ -24,8 +24,6 @@ import "../../poly";
 
 import styles from "./styles.scss";
 
-// Set ABC color scale. Matches measure names with colors
-
 export default class Dots extends React.Component {
   constructor(props) {
     super(props);
@@ -71,11 +69,6 @@ export default class Dots extends React.Component {
       .catch(error => {
         console.error("Could not load data", error);
       });
-  }
-
-  componentWillUnmount() {
-    // TODO: remove any listeners here
-    // ...
   }
 
   render() {
@@ -360,25 +353,17 @@ function graph(mountNode, data, options) {
   }
 
   function getClusterSimulation() {
-    return (
-      forceSimulation()
-        .force("gravity", forceCenter(width / 2, height / 2))
-        .force(
-          "attract",
-          forceManyBody()
-            .strength(100)
-            .distanceMin(10)
-            .distanceMax(Math.max(width, height) * 2)
-        )
-        // .force(
-        //   "repel",
-        //   forceManyBody()
-        //     .strength(-1000)
-        //     .distanceMax(Math.min(width, height) - margin * 2 + 90)
-        // )
-        .force("collide", forceCollide(c => c.r + 40).iterations(3))
-        .stop()
-    );
+    return forceSimulation()
+      .force("gravity", forceCenter(width / 2, height / 2))
+      .force(
+        "attract",
+        forceManyBody()
+          .strength(100)
+          .distanceMin(10)
+          .distanceMax(Math.max(width, height) * 2)
+      )
+      .force("collide", forceCollide(c => c.r + 40).iterations(3))
+      .stop();
   }
 
   return { update };
