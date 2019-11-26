@@ -2,7 +2,7 @@
 
 A more generalised and modernised version of [Census as 100 people](https://github.com/abcnews/census-100-people/).
 
-This uses the [scrollyteller](https://github.com/abcnews/scrollyteller) react component. 
+This uses the [scrollyteller](https://github.com/abcnews/scrollyteller) react component.
 
 ## Usage
 
@@ -16,6 +16,7 @@ Start by specifying a data file in the `init-interactive` embed.
   data-groupyteller-root
   data-scripts="[link to latest code]"
   data-data="[link to csv]"
+  data-total="100"
   data-no-support-msg="true"
 ></div>
 ```
@@ -52,7 +53,7 @@ Each panel in the visualisation shows all rows in the data set with a combinatio
 - issues, sixteen
 - issues, qld
 
-All rows related to a specific combination of `measure` and `comparison` should add to 100. Lets take `issues` and `nineteen` as an example:
+All rows related to a specific combination of `measure` and `comparison` should add to 100 (or the total specified in the optional `data-total` attribute). Lets take `issues` and `nineteen` as an example:
 
 | group                       | value |
 | --------------------------- | ----- |
