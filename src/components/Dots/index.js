@@ -24,7 +24,7 @@ import "../../poly";
 
 import styles from "./styles.scss";
 
-const DEFAULT_TOTAL = 100;
+const RESERVED_GROUP_KEY = "_reserved_";
 
 export default class Dots extends React.Component {
   constructor(props) {
@@ -63,6 +63,7 @@ export default class Dots extends React.Component {
         if (colorPropertyMeta)
           options.colorProperty = colorPropertyMeta.content;
         options.marks = this.props.marks;
+        options.total = this.props.total;
 
         const viz = graph(this.rootRef.current, data, options);
         viz.update(this.props);
@@ -93,7 +94,8 @@ function graph(mountNode, data, options) {
       colorProperty: "measure",
       margin: 20,
       markRadius: 5,
-      markMargin: 7
+      markMargin: 7,
+      total: 100
     },
     options
   );
@@ -101,7 +103,14 @@ function graph(mountNode, data, options) {
   let dots = [];
   let clusters = [];
 
-  const { colors, colorProperty, margin, markRadius, markMargin } = options;
+  const {
+    colors,
+    colorProperty,
+    margin,
+    markRadius,
+    markMargin,
+    total
+  } = options;
   const domain = options.marks.reduce((acc, row) => {
     if (acc.indexOf(row[colorProperty]) === -1) {
       acc.push(row[colorProperty]);
@@ -124,8 +133,7 @@ function graph(mountNode, data, options) {
   let dotSimulation;
 
   const update = props => {
-    const { mark, total } = props;
-    const expectedTotal = total || DEFAULT_TOTAL;
+    const { mark } = props;
 
     if (!mark || (measure === mark.measure && comparison === mark.comparison))
       return;
@@ -149,10 +157,17 @@ function graph(mountNode, data, options) {
       hexToRgbA(color)
     );
 
-    // New data
-    clusters = data
+    const measureComparisonGroups = data
       // Just the groups being compared currently
-      .filter(d => d.measure === measure && d.comparison === comparison)
+      .filter(d => d.measure === measure && d.comparison === comparison);
+
+    const reserved = measureComparisonGroups.filter(
+      d => d.group === RESERVED_GROUP_KEY
+    );
+
+    // New data
+    clusters = measureComparisonGroups
+      .filter(d => d.group !== RESERVED_GROUP_KEY)
       // Add some properties to the groups
       .map(d => {
         const existingCluster = clusters.find(
@@ -173,16 +188,23 @@ function graph(mountNode, data, options) {
         };
       });
 
-    const totalValue = clusters.reduce(
+    const reservedTotal = reserved.reduce(
       (memo, group) => (memo += +group.value),
       0
     );
 
+    const clustersTotal = clusters.reduce(
+      (memo, group) => (memo += +group.value),
+      0
+    );
+
+    const measureComparisonTotal = reservedTotal + clustersTotal;
+
     // Failsafe for bad data
-    if (totalValue !== expectedTotal) {
+    if (measureComparisonTotal !== total) {
       console.warn(
-        `Group error: total value is ${totalValue}, it should be ${expectedTotal}`,
-        clusters
+        `Group error: total value is ${measureComparisonTotal}, it should be ${total}`,
+        { reserved, clusters }
       );
       return;
     }
