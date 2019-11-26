@@ -3,7 +3,7 @@ import Scrollyteller from "@abcnews/scrollyteller";
 import Dots from "../Dots";
 import styles from "./styles.scss";
 
-export default function App({ scrollyData, dataUrl }) {
+export default function App({ scrollyData, dataUrl, total }) {
   const [mark, setMark] = useState();
   const [dimensions, setDimensions] = useState();
 
@@ -28,6 +28,7 @@ export default function App({ scrollyData, dataUrl }) {
         mark={mark}
         marks={scrollyData.panels.map(d => d.config)}
         dataUrl={dataUrl}
+        total={total}
         width={dimensions[0]}
         height={dimensions[1]}
       />

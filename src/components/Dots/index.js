@@ -24,6 +24,8 @@ import "../../poly";
 
 import styles from "./styles.scss";
 
+const DEFAULT_TOTAL = 100;
+
 export default class Dots extends React.Component {
   constructor(props) {
     super(props);
@@ -122,7 +124,8 @@ function graph(mountNode, data, options) {
   let dotSimulation;
 
   const update = props => {
-    const { mark } = props;
+    const { mark, total } = props;
+    const expectedTotal = total ? +total : DEFAULT_TOTAL;
 
     if (!mark || (measure === mark.measure && comparison === mark.comparison))
       return;
@@ -171,14 +174,14 @@ function graph(mountNode, data, options) {
       });
 
     const totalValue = clusters.reduce(
-      (total, group) => (total += +group.value),
+      (memo, group) => (memo += +group.value),
       0
     );
 
     // Failsafe for bad data
-    if (totalValue !== 100) {
+    if (totalValue !== expectedTotal) {
       console.warn(
-        `Group error: total value is ${totalValue}, it should be 100`,
+        `Group error: total value is ${totalValue}, it should be ${expectedTotal}`,
         clusters
       );
       return;
