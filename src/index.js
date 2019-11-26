@@ -29,7 +29,7 @@ function init() {
       projectName={PROJECT_NAME}
       scrollyData={scrollyteller}
       dataUrl={root.dataset.data || `${__webpack_public_path__}data.csv`}
-      total={root.dataset.total}
+      total={+root.dataset.total}
     />,
     scrollyteller.mountNode
   );

@@ -125,7 +125,7 @@ function graph(mountNode, data, options) {
 
   const update = props => {
     const { mark, total } = props;
-    const expectedTotal = total ? +total : DEFAULT_TOTAL;
+    const expectedTotal = total || DEFAULT_TOTAL;
 
     if (!mark || (measure === mark.measure && comparison === mark.comparison))
       return;
