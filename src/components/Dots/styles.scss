@@ -12,6 +12,7 @@
 
   .population {
     fill: rgba(255, 255, 255, 0.8);
+    fill: var(--group-color, rgba(255, 255, 255, 0.8));
     stroke-width: 0;
     stroke: #000;
   }
