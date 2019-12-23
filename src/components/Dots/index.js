@@ -80,6 +80,14 @@ export default class Dots extends React.Component {
         options.marks = this.props.marks;
         options.total = this.props.total;
 
+        // Re-format group names
+        data.forEach(row => {
+          row.group = row.group
+            .replace(/_/g, "\u00a0")
+            .replace(/\(/g, "(\u202f")
+            .replace(/\)/g, "\u202f)");
+        });
+
         const viz = graph(this.rootRef.current, data, options);
         viz.update(this.props);
         return viz;
