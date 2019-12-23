@@ -24,7 +24,7 @@ import "../../poly";
 
 import styles from "./styles.scss";
 
-const RESERVED_GROUP_KEY = "_reserved_";
+const RESERVED_GROUP_KEY = "-reserved-";
 const MQ_LARGE = window.matchMedia("(min-width: 1023px)");
 
 export default class Dots extends React.Component {
