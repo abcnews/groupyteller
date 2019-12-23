@@ -123,7 +123,7 @@ export function tspans(selection, lines, lh) {
     .text(d => d.line)
     .attr("x", 0)
     .attr("dy", (d, i) =>
-      i ? (typeof lh == "function" ? lh(d.parent, d.line, i) : lh) || 15 : 0
+      i ? (typeof lh == "function" ? lh(d.parent, d.line, i) : lh) || 17 : 0
     );
 }
 
