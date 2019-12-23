@@ -10,7 +10,7 @@ let scrollyteller;
 
 function init() {
   try {
-    scrollyteller = loadOdysseyScrollyteller("", "u-full");
+    scrollyteller = loadOdysseyScrollyteller("groupyteller", "u-full");
   } catch (e) {
     console.error(e);
   }
@@ -33,6 +33,20 @@ function init() {
     />,
     scrollyteller.mountNode
   );
+
+  // Add data-* attriubutes to aligned panels so we can override some styles
+  setTimeout(() => {
+    scrollyteller.panels.forEach(panel => {
+      if (!panel.config.align || !panel.nodes.length) {
+        return;
+      }
+
+      panel.nodes[0].parentElement.setAttribute(
+        "data-align",
+        panel.config.align
+      );
+    });
+  }, 300);
 }
 
 if (window.__ODYSSEY__) {

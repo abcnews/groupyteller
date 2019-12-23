@@ -71,7 +71,7 @@ A basic story setup will look like this:
 
 ```text
 Introduction to the story here.
-#scrollytellerMEASUREissuesCOMPARISONnone
+#scrollytellerNAMEgroupytellerMEASUREissuesCOMPARISONnone
 This is the text for the first panel which will display the groups associated with the measure 'issues' and the comparison 'none'. (So in this case it will be a single group labeled 'all').
 #markMEASUREissuesCOMPARISONsixteen
 This is the text associated with the second panel defined above using the #mark fragment. It will show groups from the combo of 'issues' and 'sixteen'.
