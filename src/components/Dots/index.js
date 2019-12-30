@@ -58,25 +58,12 @@ export default class Dots extends React.Component {
         const colorPropertyMeta = document.querySelector(
           "meta[name=bg-colour-property]"
         );
-        const groupsColorsMeta = document.querySelector(
-          "meta[name=groups-colours]"
-        );
 
         const options = {};
         if (colorMeta) options.colors = colorMeta.content.split(",");
         if (colorPropertyMeta)
           options.colorProperty = colorPropertyMeta.content;
 
-        if (groupsColorsMeta)
-          options.groupsColors = groupsColorsMeta.content
-            .split(",")
-            .reduce((memo, keyVal) => {
-              const [key, val] = keyVal.split(":");
-
-              memo[key] = val;
-
-              return memo;
-            }, {});
         options.marks = this.props.marks;
         options.total = this.props.total;
 
@@ -115,7 +102,6 @@ function graph(mountNode, data, options) {
         "#306C3F"
       ],
       colorProperty: "measure",
-      groupsColors: {},
       margin: 20,
       markRadius: 5,
       markMargin: 7,
@@ -217,7 +203,7 @@ function graph(mountNode, data, options) {
 
         return {
           ...cluster,
-          color: options.groupsColors[d.group],
+          color: d.color || d.colour || null,
           r: Math.sqrt((+d.value * (markRadius + markMargin) * 35) / Math.PI),
           value: +d.value,
           groupLines: wordwrap(d.group, 10)
