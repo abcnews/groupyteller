@@ -37,7 +37,11 @@ function init() {
   // Add data-* attriubutes to aligned panels so we can override some styles
   setTimeout(() => {
     scrollyteller.panels.forEach(panel => {
-      if (!panel.config.align || !panel.nodes.length) {
+      if (
+        !panel.config.align ||
+        !panel.nodes.length ||
+        !panel.nodes[0].parentElement
+      ) {
         return;
       }
 
