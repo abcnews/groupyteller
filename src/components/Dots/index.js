@@ -97,9 +97,8 @@ function graph(mountNode, data, options) {
         "#B05154",
         "#1B7A7D",
         "#8D4579",
-        "#97593F",
-        "#605487",
-        "#306C3F"
+        "#306C3F",
+        "#605487"
       ],
       colorProperty: "measure",
       margin: 20,
