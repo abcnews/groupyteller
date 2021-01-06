@@ -15,7 +15,7 @@
 		"test": "aunty test"
 	},
 	"devDependencies": {
-		"@abcnews/aunty": "^10.4.2",
+		"@abcnews/aunty": "^11.2.1",
 		"react-test-renderer": "^16.8.6"
 	},
 	"dependencies": {
