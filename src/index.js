@@ -1,7 +1,8 @@
+import { isMount } from "@abcnews/mount-utils";
+import { loadScrollyteller } from "@abcnews/scrollyteller";
 import React from "react";
 import { render } from "react-dom";
 import App from "./components/App";
-import { loadScrollyteller } from "@abcnews/scrollyteller";
 
 const PROJECT_NAME = "groupyteller";
 const root = document.querySelector(`[data-${PROJECT_NAME}-root]`);
@@ -20,10 +21,8 @@ function init() {
 
   // Keep the DOM tidy.
   if (scrollyData && scrollyData.mountNode) {
-    while (scrollyData.mountNode.nextElementSibling.tagName === "A") {
-      window.__ODYSSEY__.utils.dom.detach(
-        scrollyData.mountNode.nextElementSibling
-      );
+    while (isMount(scrollyData.mountNode.nextElementSibling)) {
+      scrollyData.mountNode.parentElement.removeChild(scrollyData.mountNode.nextElementSibling);
     }
   }
 

@@ -19,6 +19,7 @@
 		"react-test-renderer": "^16.8.6"
 	},
 	"dependencies": {
+		"@abcnews/mount-utils": "^2.0.0",
 		"@abcnews/scrollyteller": "^4.0.2",
 		"d3-array": "^2.1.0",
 		"d3-force": "^2.0.1",
