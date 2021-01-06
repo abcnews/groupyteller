@@ -410,8 +410,7 @@ function graph(mountNode, data, options) {
     return forceSimulation()
       .force(
         "gravity",
-        // forceCenter(MQ_LARGE.matches ? mqLargeCenterX : width / 2, height / 2)
-        forceCenter(width / 2, height / 2)
+        forceCenter(MQ_LARGE.matches ? mqLargeCenterX : width / 2, height / 2)
       )
       .force(
         "attract",
