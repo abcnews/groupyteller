@@ -1,4 +1,4 @@
-import { sum } from "d3-array";
+import { sum } from 'd3-array';
 
 // while this might not be reprentative for all fonts, it is
 // still better than assuming every character has the same width
@@ -56,10 +56,10 @@ const CHAR_W = {
   y: 6,
   Z: 7,
   z: 5,
-  ".": 2,
-  ",": 2,
-  ":": 2,
-  ";": 2
+  '.': 2,
+  ',': 2,
+  ':': 2,
+  ';': 2
 };
 
 export function deg2rad(deg) {
@@ -96,43 +96,36 @@ export function getRandomInCircle(xMin, xMax, yMin, yMax) {
   return randomPoint;
 }
 
-export function hexToRgbA(hex, a = "0.85") {
+export function hexToRgbA(hex, a = '0.85') {
   // also adds alpha
   let c;
   if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
-    c = hex.substring(1).split("");
+    c = hex.substring(1).split('');
     if (c.length == 3) {
       c = [c[0], c[0], c[1], c[1], c[2], c[2]];
     }
-    c = "0x" + c.join("");
-    return `rgba(${[(c >> 16) & 255, (c >> 8) & 255, c & 255].join(",")},${a})`;
+    c = '0x' + c.join('');
+    return `rgba(${[(c >> 16) & 255, (c >> 8) & 255, c & 255].join(',')},${a})`;
   }
-  throw new Error("Bad Hex");
+  throw new Error('Bad Hex');
 }
 
 export function tspans(selection, lines, lh) {
   return selection
-    .selectAll("tspan")
+    .selectAll('tspan')
     .data(parent =>
-      (typeof lines == "function" ? lines(parent) : lines).map(line => ({
+      (typeof lines == 'function' ? lines(parent) : lines).map(line => ({
         line,
         parent
       }))
     )
-    .join("tspan")
+    .join('tspan')
     .text(d => d.line)
-    .attr("x", 0)
-    .attr("dy", (d, i) =>
-      i ? (typeof lh == "function" ? lh(d.parent, d.line, i) : lh) || 17 : 0
-    );
+    .attr('x', 0)
+    .attr('dy', (d, i) => (i ? (typeof lh == 'function' ? lh(d.parent, d.line, i) : lh) || 17 : 0));
 }
 
-export function wordwrap(
-  line,
-  maxCharactersPerLine,
-  minCharactersPerLine,
-  monospace
-) {
+export function wordwrap(line, maxCharactersPerLine, minCharactersPerLine, monospace) {
   var l,
     lines = [],
     w = [],
@@ -142,34 +135,28 @@ export function wordwrap(
     minChars,
     maxLineW,
     minLineW;
-  w1 = line.split(" ");
-  w1.forEach(function(s, i) {
-    var w2 = s.split("-");
+  w1 = line.split(' ');
+  w1.forEach(function (s, i) {
+    var w2 = s.split('-');
     if (w2.length > 1) {
-      w2.forEach(function(t, j) {
-        w.push(t + (j < w2.length - 1 ? "-" : ""));
+      w2.forEach(function (t, j) {
+        w.push(t + (j < w2.length - 1 ? '-' : ''));
       });
     } else {
-      w.push(s + (i < w1.length - 1 ? " " : ""));
+      w.push(s + (i < w1.length - 1 ? ' ' : ''));
     }
   });
   maxChars = maxCharactersPerLine || 40;
   minChars =
     minCharactersPerLine ||
-    Math.max(
-      3,
-      Math.min(
-        maxChars * 0.5,
-        0.75 * w.map(word_len).sort(num_asc)[Math.round(w.length / 2)]
-      )
-    );
+    Math.max(3, Math.min(maxChars * 0.5, 0.75 * w.map(word_len).sort(num_asc)[Math.round(w.length / 2)]));
   maxLineW = maxChars * CHAR_W.a;
   minLineW = minChars * CHAR_W.a;
   l = 0;
-  w.forEach(function(d) {
-    var ww = sum(d.split("").map(char_w));
+  w.forEach(function (d) {
+    var ww = sum(d.split('').map(char_w));
     if (l + ww > maxLineW && l > minLineW) {
-      lines.push(words.join(""));
+      lines.push(words.join(''));
       words.length = 0;
       l = 0;
     }
@@ -177,10 +164,10 @@ export function wordwrap(
     return words.push(d);
   });
   if (words.length) {
-    lines.push(words.join(""));
+    lines.push(words.join(''));
   }
-  return lines.filter(function(d) {
-    return d !== "";
+  return lines.filter(function (d) {
+    return d !== '';
   });
   function char_w(c) {
     return (!monospace && CHAR_W[c]) || CHAR_W.a;
