@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Scrollyteller from "@abcnews/scrollyteller";
 import Dots from "../Dots";
-import scrollytellerPanelStyles from "@abcnews/scrollyteller/src/Panel/index.scss";
+import scrollytellerPanelStyles from "@abcnews/scrollyteller/src/Panel/index.module.scss";
 import styles from "./styles.scss";
 
 export default function App({ scrollyData, dataUrl, total }) {
@@ -27,7 +27,7 @@ export default function App({ scrollyData, dataUrl, total }) {
     >
       <Dots
         mark={mark}
-        marks={scrollyData.panels.map(d => d.config)}
+        marks={scrollyData.panels.map(d => d.data)}
         dataUrl={dataUrl}
         total={total}
         width={dimensions[0]}

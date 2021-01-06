@@ -90,7 +90,6 @@ export function labeler() {
         x_overlap = Math.max(0, Math.min(x12, x22) - Math.max(x11, x21));
         y_overlap = Math.max(0, Math.min(y12, y22) - Math.max(y11, y21));
         overlap_area = x_overlap * y_overlap;
-        //   console.log('label-overlap', overlap_area);
         result += overlap_area * w_lab2;
       }
 
@@ -102,7 +101,6 @@ export function labeler() {
       x_overlap = Math.max(0, Math.min(x12, x22) - Math.max(x11, x21));
       y_overlap = Math.max(0, Math.min(y12, y22) - Math.max(y11, y21));
       overlap_area = x_overlap * y_overlap;
-      //   console.log('anchor-overlap', overlap_area);
       result += overlap_area * w_lab_anc;
     }
 
@@ -138,7 +136,6 @@ export function labeler() {
 
     // delta E
     var delta_energy = new_energy - old_energy;
-    // console.log('delta_energy', delta_energy);
     if (Math.random() < Math.exp(-delta_energy / currT)) {
       acceptedMoves += 1;
     } else {
