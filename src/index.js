@@ -82,7 +82,7 @@ function init() {
 }
 
 if (window.__ODYSSEY__) {
-  renderApp();
+  init();
 } else {
   window.addEventListener('odyssey:api', init);
 }
@@ -90,7 +90,7 @@ if (window.__ODYSSEY__) {
 if (module.hot) {
   module.hot.accept('./components/App', () => {
     try {
-      init();
+      renderApp();
     } catch (err) {
       import('./components/ErrorBox').then(exports => {
         const ErrorBox = exports.default;
