@@ -27,7 +27,7 @@
 		"d3-force": "^2.0.1",
 		"d3-path": "^1.0.7",
 		"d3-request": "^1.0.6",
-		"d3-scale": "^3.0.0",
+		"d3-scale": "^4.0.2",
 		"d3-selection": "^1.4.0",
 		"power-ranger": "^1.1.0",
 		"react": "^16.8.6",
